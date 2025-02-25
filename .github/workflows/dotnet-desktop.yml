@@ -73,12 +73,6 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    #- name: Setup MSBuild.exe
-     # uses: microsoft/setup-msbuild@v2
-    - name: Restore dependencies
-      run: dotnet restore 
-
     - name: Install Windows SDK (Release only)
       if: matrix.configuration == 'Release'
       shell: pwsh
@@ -117,22 +111,36 @@ jobs:
       if: matrix.configuration == 'Release' 
       run: |
         $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
-        [IO.File]::WriteAllBytes("SigningCertificate.pfx", $pfx_cert_byte)
+        $certPath = "$env:RUNNER_TEMP\SigningCertificate.pfx"
+        [IO.File]::WriteAllBytes($certPath, $pfx_cert_byte)
       shell: pwsh
+
+    # Podpisywanie aplikacji Pfx_Password
+    - name: Sign the artifact (Release only)
+      if: matrix.configuration == 'Release'
+      shell: pwsh
+      run: |
+        $signtoolPath = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe"
+        & "$signtoolPath" sign `
+          /f "$env:RUNNER_TEMP\SigningCertificate.pfx" `
+          /p "${{ secrets.Pfx_Password }}" `
+          /tr http://timestamp.digicert.com `
+          /td SHA256 `
+          /fd SHA256 `
+          /v `
+          "$env:GITHUB_WORKSPACE\publish-Release\BitmapFiltr.exe"
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    #- name: Setup MSBuild.exe
+     # uses: microsoft/setup-msbuild@v2
+    - name: Restore dependencies
+      run: dotnet restore 
       
     - name: Build WPF App
       run: dotnet build --configuration ${{ matrix.configuration }} 
       
     - name: Publish WPF App
       run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
-
-    # Podpisywanie aplikacji
-    - name: Sign the application
-      if: matrix.configuration == 'Release' 
-      run: |
-        & "${{ env.SIGNSERVICE }}" sign /f SigningCertificate.pfx /p "${{ secrets.Pfx_Password }}" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "publish-${{ matrix.configuration }}/BitmapFiltr.exe"
-      shell: pwsh
-
+      
     # Usunięcie certyfikatu po podpisaniu
     - name: Remove PFX
       if: matrix.configuration == 'Release' 
