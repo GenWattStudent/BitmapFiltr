@@ -1,0 +1,53 @@
+﻿<Window x:Class="BitmapFiltr.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BitmapFiltr" xmlns:viewmodels="clr-namespace:BitmapFiltr.ViewModels" xmlns:views="clr-namespace:BitmapFiltr.Views" xmlns:local1="clr-namespace:BitmapFiltr.Behaviors"
+        mc:Ignorable="d"
+        Background="{StaticResource BackgroundBrush}"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel, IsDesignTimeCreatable=True}"
+        Title="Filter" Height="800" Width="1000">
+    <ScrollViewer>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Margin="5">
+                <TextBlock Text="Original Image: " Margin="0,5" />
+                <Border BorderBrush="WhiteSmoke" BorderThickness="2" CornerRadius="2">
+                    <Image Source="{Binding ImageBitmap}" />
+                </Border>
+
+                <WrapPanel Margin="0,10">
+                    <TextBlock Text="Matrix Size:" VerticalAlignment="Center" />
+                    <TextBox 
+                        Text="{Binding FilterSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                        Width="100"
+                        Margin="5,0"
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Center" />
+                    <Button Content="Update Matrix" Command="{Binding RandomMatrixCommand}" />
+                </WrapPanel>
+
+                <!-- Matrix Display -->
+                <views:Matrix DataContext="{Binding FilterMatrix}" />
+
+                <WrapPanel Margin="0,5">
+                    <Button Content="Apply Filter" Command="{Binding ApplyFilterCommand}" />
+                    <Button Content="Random matrix" Command="{Binding RandomMatrixCommand}" />
+                </WrapPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Margin="5">
+                <TextBlock Text="Image after filter" Margin="0,5"/>
+                <Border BorderBrush="WhiteSmoke" BorderThickness="2" CornerRadius="2"> 
+                    <Image Source="{Binding NewImageBitmap}" />
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

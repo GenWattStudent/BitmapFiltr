@@ -1,0 +1,71 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Colors -->
+    <Color x:Key="BackgroundColor">#FF1E1E1E</Color>
+    <Color x:Key="ForegroundColor">#FFF5F5F5</Color>
+    <Color x:Key="BorderColor">#FF3C3C3C</Color>
+    <Color x:Key="ButtonBackgroundColor">#FF2D2D2D</Color>
+    <Color x:Key="ButtonForegroundColor">#FFF5F5F5</Color>
+    <Color x:Key="ButtonHoverBackgroundColor">#FF3C3C3C</Color>
+    <Color x:Key="TextBoxBackgroundColor">#FF2D2D2D</Color>
+    <Color x:Key="TextBoxForegroundColor">#FFF5F5F5</Color>
+    <Color x:Key="TextBoxHoverBackgroundColor">#FF3C3C3C</Color>
+
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
+    <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="{StaticResource ButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="ButtonForegroundBrush" Color="{StaticResource ButtonForegroundColor}" />
+    <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="{StaticResource ButtonHoverBackgroundColor}" />
+    <SolidColorBrush x:Key="TextBoxBackgroundBrush" Color="{StaticResource TextBoxBackgroundColor}" />
+    <SolidColorBrush x:Key="TextBoxForegroundBrush" Color="{StaticResource TextBoxForegroundColor}" />
+    <SolidColorBrush x:Key="TextBoxHoverBackgroundBrush" Color="{StaticResource TextBoxHoverBackgroundColor}" />
+
+    <!-- Window Style -->
+    <Style TargetType="Window">
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+
+    <!-- TextBlock Style -->
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+
+    <!-- Border Style -->
+    <Style TargetType="Border">
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+    </Style>
+
+    <!-- Button Style -->
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource ButtonForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="Padding" Value="5,2" />
+        <Setter Property="Margin" Value="2" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource ButtonHoverBackgroundBrush}" />
+                <Setter Property="Foreground" Value="Green" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- TextBox Style -->
+    <Style TargetType="TextBox">
+        <Setter Property="Background" Value="{StaticResource TextBoxBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource TextBoxForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="Padding" Value="5,2" />
+        <Setter Property="Margin" Value="2" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource TextBoxHoverBackgroundBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+  
+</ResourceDictionary>
