@@ -80,16 +80,16 @@ jobs:
       run: dotnet restore 
 
     - name: Build WPF App
-      run: dotnet build --configuration Release 
+      run: dotnet build --configuration ${{ matrix.configuration }} 
       
     - name: Publish WPF App
-      run: dotnet publish -c Release -o publish 
+      run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WPF-App
-        path: publish
+        name: WPF-App-${{ matrix.configuration }}  
+        path: publish-${{ matrix.configuration }}
     # Execute all unit tests in the solution
     #- name: Execute unit tests
      # run: dotnet test
@@ -106,6 +106,20 @@ jobs:
       #  $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
        # $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
         #[IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+      # Decode PFX
+    - name: Decode PFX Certificate
+      run: |
+        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+        [IO.File]::WriteAllBytes("SigningCertificate.pfx", $pfx_cert_byte)
+
+    # Sign the application
+    - name: Sign the application
+      run: |
+        & "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign /f SigningCertificate.pfx /p "${{ secrets.Pfx_Password }}" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "publish-${{ matrix.configuration }}\YourApp.exe"
+
+    # Clean up
+    - name: Remove PFX
+      run: Remove-Item SigningCertificate.pfx
 
     # Create the app package by building and packaging the Windows Application Packaging project
    # - name: Create the app package
