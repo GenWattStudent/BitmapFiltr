@@ -79,14 +79,13 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore 
 
-    - name: Build WPF App
-      run: dotnet build --configuration ${{ matrix.configuration }} 
+    - name: Install Windows SDK
+      if: matrix.configuration == 'Release' 
+      uses: warrenbuckley/Setup-Windows-SDK@v1
       
-    - name: Publish WPF App
-      run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
-
-    # Znajdź signtool.exe
+          # Znajdź signtool.exe
     - name: Find signtool.exe
+      if: matrix.configuration == 'Release' 
       id: find_signtool
       run: |
         $signtoolPath = Get-Command -Name signtool.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
@@ -97,22 +96,31 @@ jobs:
         Write-Host "Found signtool.exe at: $signtoolPath"
         echo "SIGNSERVICE=$signtoolPath" >> $env:GITHUB_ENV
       shell: pwsh
-
+      
     # Dekodowanie certyfikatu
     - name: Decode PFX Certificate
+      if: matrix.configuration == 'Release' 
       run: |
         $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
         [IO.File]::WriteAllBytes("SigningCertificate.pfx", $pfx_cert_byte)
       shell: pwsh
+      
+    - name: Build WPF App
+      run: dotnet build --configuration ${{ matrix.configuration }} 
+      
+    - name: Publish WPF App
+      run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
 
     # Podpisywanie aplikacji
     - name: Sign the application
+      if: matrix.configuration == 'Release' 
       run: |
         & "${{ env.SIGNSERVICE }}" sign /f SigningCertificate.pfx /p "${{ secrets.Pfx_Password }}" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "publish-${{ matrix.configuration }}/BitmapFiltr.exe"
       shell: pwsh
 
     # Usunięcie certyfikatu po podpisaniu
     - name: Remove PFX
+      if: matrix.configuration == 'Release' 
       run: Remove-Item SigningCertificate.pfx
       shell: pwsh
 
