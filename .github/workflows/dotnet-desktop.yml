@@ -27,7 +27,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
@@ -76,14 +75,22 @@ jobs:
               exit 1
           }
       
-    # Dekodowanie certyfikatu
-    - name: Decode PFX Certificate
+    - name: Decode PFX Certificate (Release only)
       if: matrix.configuration == 'Release' 
       run: |
         $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
         $certPath = "$env:RUNNER_TEMP\SigningCertificate.pfx"
         [IO.File]::WriteAllBytes($certPath, $pfx_cert_byte)
       shell: pwsh
+
+    - name: Cache NuGet Packages
+      id: cache-nuget
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          nuget-${{ runner.os }}-
 
     - name: Restore dependencies
       run: dotnet restore 
@@ -94,7 +101,6 @@ jobs:
     - name: Publish WPF App
       run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
 
-    # Podpisywanie aplikacji Pfx_Password
     - name: Sign the artifact (Release only)
       if: matrix.configuration == 'Release'
       shell: pwsh
@@ -109,8 +115,7 @@ jobs:
           /v `
           "$env:GITHUB_WORKSPACE\publish-Release\BitmapFiltr.exe"
       
-    # Usunięcie certyfikatu po podpisaniu
-    - name: Remove PFX
+    - name: Remove PFX Certificate (Release only)
       if: matrix.configuration == 'Release' 
       run: Remove-Item "$env:RUNNER_TEMP\SigningCertificate.pfx"
       shell: pwsh
