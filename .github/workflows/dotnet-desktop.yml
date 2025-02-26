@@ -126,6 +126,7 @@ jobs:
       
     - name: Publish WPF App
       run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
+
     # Podpisywanie aplikacji Pfx_Password
     - name: Sign the artifact (Release only)
       if: matrix.configuration == 'Release'
@@ -144,7 +145,7 @@ jobs:
     # Usunięcie certyfikatu po podpisaniu
     - name: Remove PFX
       if: matrix.configuration == 'Release' 
-      run: Remove-Item SigningCertificate.pfx
+      run: Remove-Item "$env:RUNNER_TEMP\SigningCertificate.pfx"
       shell: pwsh
 
     - name: Upload Artifact
