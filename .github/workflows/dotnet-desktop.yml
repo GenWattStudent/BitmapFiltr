@@ -46,6 +46,27 @@ jobs:
         $installerUrl = "https://aka.ms/vs/17/release/vs_buildtools.exe"
         $installerPath = "$env:RUNNER_TEMP\vs_buildtools.exe"
         Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+        
+    - name: Check for Windows SDK
+      id: check-sdk
+      shell: pwsh
+      run: |
+        $sdkInstalled = Test-Path "C:\Program Files (x86)\Windows Kits\10\bin"
+        if ($sdkInstalled) {
+          echo "SDK_INSTALLED=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        } else {
+          echo "SDK_INSTALLED=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        }
+
+    - name: Install Windows SDK (if missing)
+      if: matrix.configuration == 'Release' && env.SDK_INSTALLED == 'false'
+      shell: pwsh
+      run: |
+        $installerPath = "$env:RUNNER_TEMP\vs_buildtools.exe"
+        Start-Process -Wait -FilePath $installerPath -ArgumentList `
+          "--quiet", "--norestart", "--nocache", `
+          "--add Microsoft.VisualStudio.Workload.WindowsBuildTools", `
+          "--add Microsoft.VisualStudio.Component.Windows10SDK"
 
     - name: Install Windows SDK (Release only)
       if: matrix.configuration == 'Release'
