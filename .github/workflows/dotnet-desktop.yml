@@ -58,18 +58,8 @@ jobs:
           echo "SDK_INSTALLED=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         }
 
-    - name: Install Windows SDK (if missing)
+    - name: Install Windows SDK (if missing and in Release only)
       if: matrix.configuration == 'Release' && env.SDK_INSTALLED == 'false'
-      shell: pwsh
-      run: |
-        $installerPath = "$env:RUNNER_TEMP\vs_buildtools.exe"
-        Start-Process -Wait -FilePath $installerPath -ArgumentList `
-          "--quiet", "--norestart", "--nocache", `
-          "--add Microsoft.VisualStudio.Workload.WindowsBuildTools", `
-          "--add Microsoft.VisualStudio.Component.Windows10SDK"
-
-    - name: Install Windows SDK (Release only)
-      if: matrix.configuration == 'Release'
       shell: pwsh
       run: |
         $installerPath = "$env:RUNNER_TEMP\vs_buildtools.exe"
