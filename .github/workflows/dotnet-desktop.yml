@@ -115,6 +115,17 @@ jobs:
         [IO.File]::WriteAllBytes($certPath, $pfx_cert_byte)
       shell: pwsh
 
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    #- name: Setup MSBuild.exe
+     # uses: microsoft/setup-msbuild@v2
+    - name: Restore dependencies
+      run: dotnet restore 
+      
+    - name: Build WPF App
+      run: dotnet build --configuration ${{ matrix.configuration }} 
+      
+    - name: Publish WPF App
+      run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
     # Podpisywanie aplikacji Pfx_Password
     - name: Sign the artifact (Release only)
       if: matrix.configuration == 'Release'
@@ -129,17 +140,6 @@ jobs:
           /fd SHA256 `
           /v `
           "$env:GITHUB_WORKSPACE\publish-Release\BitmapFiltr.exe"
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    #- name: Setup MSBuild.exe
-     # uses: microsoft/setup-msbuild@v2
-    - name: Restore dependencies
-      run: dotnet restore 
-      
-    - name: Build WPF App
-      run: dotnet build --configuration ${{ matrix.configuration }} 
-      
-    - name: Publish WPF App
-      run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
       
     # Usunięcie certyfikatu po podpisaniu
     - name: Remove PFX
