@@ -1,8 +1,7 @@
-﻿using BalasFilter;
-using BitmapFiltr.Commands;
+﻿using BitmapFiltr.Commands;
 using BitmapFiltr.Models;
+using Filters;
 using Filters.Models;
-using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -19,7 +18,7 @@ public class MainWindowViewModel : ViewModelBase
     private ICommand _applyFilterCommand;
     private ICommand _randomMatrixCommand;
 
-    private IFilter _ballasFilter = new BallasFilter();
+    private IFilter _laplacianFilter;
     private string _uri = "pack://application:,,,/BitmapFiltr;component/Assets/DevToolsTodo.png";
 
     public BitmapImage ImageBitmap
@@ -55,36 +54,27 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand ApplyFilterCommand => _applyFilterCommand;
     public ICommand RandomMatrixCommand =>  _randomMatrixCommand;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(LaplacianFilter laplacianFilter)
     {
         var uri = new Uri(_uri, UriKind.Absolute);
         var image = new BitmapImage(uri);
 
         ImageBitmap = image;
-        UpdateMatrix();
 
         _applyFilterCommand = new RelayCommand(ApplyFilter);
         _randomMatrixCommand = new RelayCommand(UpdateMatrix);
-    }
+        _laplacianFilter = laplacianFilter;
 
-    public void DecimalTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-    {
-        e.Handled = !IsTextAllowed(e.Text);
-    }
-
-    private static bool IsTextAllowed(string text)
-    {
-        Regex regex = new Regex("[^0-9.-]+");
-        return !regex.IsMatch(text);
+        UpdateMatrix();
     }
 
     private void UpdateMatrix()
     {
-        FilterMatrix.FromArray(_ballasFilter.GenerateFilter(_filterSize));
+        FilterMatrix.FromArray(_laplacianFilter.GenerateFilter(_filterSize));
     }
 
     private void ApplyFilter()
     {
-        NewImageBitmap = _ballasFilter.ApplyFilter(_imageBitmap, _filterMatrix.ToArray());
+        NewImageBitmap = _laplacianFilter.ApplyFilter(_imageBitmap, _filterMatrix.ToArray());
     }
 }

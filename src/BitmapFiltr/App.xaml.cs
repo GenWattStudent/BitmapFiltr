@@ -1,5 +1,5 @@
-﻿using BalasFilter;
-using BitmapFiltr.ViewModels;
+﻿using BitmapFiltr.ViewModels;
+using Filters;
 using Filters.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
@@ -19,15 +19,15 @@ public partial class App : Application
 
     private void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<IFilter, BallasFilter>();
+        services.AddSingleton<LaplacianFilter>();
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<MainWindow>();
     }
 
-    //protected override void OnStartup(StartupEventArgs e)
-    //{
-    //    var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-    //    mainWindow.Show();
-    //    base.OnStartup(e);
-    //}
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+        mainWindow.Show();
+        base.OnStartup(e);
+    }
 }
