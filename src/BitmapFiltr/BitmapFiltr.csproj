@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BalasFilter\Filters.csproj" />
+    <ProjectReference Include="..\Filters\Filters.csproj" />
   </ItemGroup>
 
   <ItemGroup>
