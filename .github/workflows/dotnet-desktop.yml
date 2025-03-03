@@ -34,6 +34,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
         cache: true
+        cache-dependency-path: subdir/packages.lock.json
 
     - name: Restore nuget libs
       run: dotnet restore --locked-mode
