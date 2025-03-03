@@ -122,24 +122,17 @@ jobs:
     - name: Build WPF App
       run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
 
-    - name: Run Unit Tests
-      run: dotnet test ${{ env.Unit_Test_Name }} --configuration ${{ matrix.configuration }} --no-build --collect:"XPlat Code Coverage"
+    - name: Run tests with coverage
+      run: |
+        dotnet test --configuration ${{ matrix.configuration}} --collect:"XPlat Code Coverage" --logger trx --results-directory TestResults
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+        reportgenerator -reports:TestResults/**/coverage.cobertura.xml -targetdir:CoverageReport -reporttypes:HtmlInline_AzurePipelines
 
-    - name: Run Integration Tests
-      run: dotnet test ${{ env.Integration_Test_Name }} --configuration ${{ matrix.configuration }} --no-build --collect:"XPlat Code Coverage"
-
-    - name: Generate Code Coverage Report
-      uses: danielpalme/ReportGenerator-GitHub-Action@v5
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
       with:
-        reports: "${{ env.Unit_Test_Folder }}/TestResults/coverage-unit.xml;"
-        targetdir: coverage-report
-        reporttypes: HtmlInline;Cobertura
-
-    - name: Upload Coverage Report Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Coverage-Report
-        path: coverage-report
+        name: coverage-report
+        path: CoverageReport
       
     - name: Publish WPF App
       run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
