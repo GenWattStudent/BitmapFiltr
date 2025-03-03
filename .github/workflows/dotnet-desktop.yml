@@ -26,36 +26,36 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
-    - name: Checkout 
-      uses: actions/checkout@v4
+    # - name: Checkout 
+    #   uses: actions/checkout@v4
 
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v4
-      with:
-        global-json-file: csharp/global.json
-        dotnet-version: 8.0.x
-        cache: true
-        cache-dependency-path: |
-          csharp/**/*.csproj
-          csharp/**/packages.lock.json
-
-    - name: Restore nuget libs
-      run: dotnet restore --locked-mode
-
-    # - name: Cache .NET SDK
-    #   id: cache-dotnet-sdk
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: ~/.dotnet
-    #     key: dotnet-sdk-${{ runner.os }}-${{ hashFiles('global.json') }}
-    #     restore-keys: |
-    #       dotnet-sdk-${{ runner.os }}-
-          
-    # - name: Install .NET Core (if not cached)
-    #   if: steps.cache-dotnet-sdk.outputs.cache-hit != 'true'
+    # - name: Setup dotnet
     #   uses: actions/setup-dotnet@v4
     #   with:
+    #     global-json-file: csharp/global.json
     #     dotnet-version: 8.0.x
+    #     cache: true
+    #     cache-dependency-path: |
+    #       csharp/**/*.csproj
+    #       csharp/**/packages.lock.json
+
+    # - name: Restore nuget libs
+    #   run: dotnet restore --locked-mode
+
+    - name: Cache .NET SDK
+      id: cache-dotnet-sdk
+      uses: actions/cache@v4
+      with:
+        path: ~/.dotnet
+        key: dotnet-sdk-${{ runner.os }}-${{ hashFiles('global.json') }}
+        restore-keys: |
+          dotnet-sdk-${{ runner.os }}-
+          
+    - name: Install .NET Core (if not cached)
+      if: steps.cache-dotnet-sdk.outputs.cache-hit != 'true'
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
 
     - name: Cache Windows SDK Installer
       id: cache-sdk
@@ -119,17 +119,17 @@ jobs:
         [IO.File]::WriteAllBytes($certPath, $pfx_cert_byte)
       shell: pwsh
 
-    # - name: Cache NuGet Packages
-    #   id: cache-nuget
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: ~/.nuget/packages
-    #     key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
-    #     restore-keys: |
-    #       nuget-${{ runner.os }}-
+    - name: Cache NuGet Packages
+      id: cache-nuget
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          nuget-${{ runner.os }}-
 
-    # - name: Restore dependencies
-    #   run: dotnet restore 
+    - name: Restore dependencies
+      run: dotnet restore 
       
     - name: Build WPF App
       run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
