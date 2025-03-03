@@ -119,14 +119,12 @@ jobs:
         [IO.File]::WriteAllBytes($certPath, $pfx_cert_byte)
       shell: pwsh
 
-    - name: Cache NuGet Packages
-      id: cache-nuget
-      uses: actions/cache@v4
+    - uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
-        key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
-          nuget-${{ runner.os }}-
+          ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
       run: dotnet restore 
