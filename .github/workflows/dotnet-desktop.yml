@@ -18,9 +18,11 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: BitmapFiltr.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
-      Unit_Test_Name: ./tests/Filters.Unit.Tests/Filters.Unit.Tests.csproj    # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Integration_Test_Name: ./tests/Filters.Integration.Tests/Filters.Integration.Tests.csproj
+      Solution_Name: BitmapFiltr.sln   
+      Unit_Test_Folder: tests/Filters.Unit.Tests
+      Integration_Test_Folder: tests/Filters.Integration.Tests                    # Replace with your solution name, i.e. MyWpfApp.sln.
+      Unit_Test_Name: tests/Filters.Unit.Tests /Filters.Unit.Tests.csproj    # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Integration_Test_Name: tests/Filters.Integration.Tests/Filters.Integration.Tests.csproj
 
     steps:
     - name: Checkout
@@ -118,19 +120,26 @@ jobs:
       run: dotnet restore 
       
     - name: Build WPF App
-      run: dotnet build --configuration ${{ matrix.configuration }} 
+      run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
 
     - name: Run Unit Tests
-      run: dotnet test ${{ env.Unit_Test_Name }} --configuration ${{ matrix.configuration }} --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="TestResults\coverage-unit.xml"
+      run: dotnet test ${{ env.Unit_Test_Name }} --configuration ${{ matrix.configuration }} --no-build --collect:"XPlat Code Coverage"
 
     - name: Run Integration Tests
-      run: dotnet test ${{ env.Integration_Test_Name }} --configuration ${{ matrix.configuration }} --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="TestResults\coverage-integration.xml"
+      run: dotnet test ${{ env.Integration_Test_Name }} --configuration ${{ matrix.configuration }} --no-build --collect:"XPlat Code Coverage"
 
     - name: Generate Code Coverage Report
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
-        reports: "${{ env.Unit_Test_Name }}/TestResults/coverage-unit.xml;${{ env.Integration_Test_Name }}/TestResults/coverage-integration.xml"
+        reports: "${{ env.Unit_Test_Folder }}/TestResults/coverage-unit.xml;"
         targetdir: coverage-report
+        reporttypes: HtmlInline;Cobertura
+
+    - name: Upload Coverage Report Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Coverage-Report
+        path: coverage-report
       
     - name: Publish WPF App
       run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}
