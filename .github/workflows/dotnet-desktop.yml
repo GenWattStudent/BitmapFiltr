@@ -149,7 +149,7 @@ jobs:
           /td SHA256 `
           /fd SHA256 `
           /v `
-          "$env:GITHUB_WORKSPACE\publish-Release\BitmapFiltr.exe"
+          "$env:GITHUB_WORKSPACE\publish-Release\Filters.exe"
       
     - name: Remove PFX Certificate (Release only)
       if: matrix.configuration == 'Release' 
