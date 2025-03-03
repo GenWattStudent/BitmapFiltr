@@ -26,8 +26,8 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
-    # - name: Checkout 
-    #   uses: actions/checkout@v4
+    - name: Checkout 
+      uses: actions/checkout@v4
 
     # - name: Setup dotnet
     #   uses: actions/setup-dotnet@v4
