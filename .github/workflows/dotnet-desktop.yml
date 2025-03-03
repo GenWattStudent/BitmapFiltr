@@ -119,7 +119,8 @@ jobs:
         [IO.File]::WriteAllBytes($certPath, $pfx_cert_byte)
       shell: pwsh
 
-    - uses: actions/cache@v4
+    - name: Cache dependencies
+      uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
