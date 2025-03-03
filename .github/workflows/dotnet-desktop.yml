@@ -21,7 +21,7 @@ jobs:
       Solution_Name: BitmapFiltr.sln   
       Unit_Test_Folder: tests/Filters.Unit.Tests
       Integration_Test_Folder: tests/Filters.Integration.Tests                    # Replace with your solution name, i.e. MyWpfApp.sln.
-      Unit_Test_Name: tests/Filters.Unit.Tests /Filters.Unit.Tests.csproj    # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Unit_Test_Name: tests/Filters.Unit.Tests/Filters.Unit.Tests.csproj    # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       Integration_Test_Name: tests/Filters.Integration.Tests/Filters.Integration.Tests.csproj
 
     steps:
