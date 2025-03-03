@@ -125,14 +125,11 @@ jobs:
 
     - name: Run Integration Tests
       run: dotnet test ${{ env.Integration_Test_Name }} --configuration ${{ matrix.configuration }} --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="TestResults\coverage-integration.xml"
-    
-    - name: Create TestResults Directory
-      run: mkdir TestResults
-      
+
     - name: Generate Code Coverage Report
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
-        reports: "TestResults/coverage-unit.xml;TestResults/coverage-integration.xml"
+        reports: "${{ env.Unit_Test_Name }}/TestResults/coverage-unit.xml;${{ env.Integration_Test_Name }}/TestResults/coverage-integration.xml"
         targetdir: coverage-report
       
     - name: Publish WPF App
