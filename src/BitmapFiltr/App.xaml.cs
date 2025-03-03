@@ -1,6 +1,5 @@
 ﻿using BitmapFiltr.ViewModels;
-using Filters;
-using Filters.Models;
+using Filters.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
@@ -19,7 +18,8 @@ public partial class App : Application
 
     private void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<LaplacianFilter>();
+        services.AddSingleton<Random>();
+        services.AddInfrastructure();
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<MainWindow>();
     }

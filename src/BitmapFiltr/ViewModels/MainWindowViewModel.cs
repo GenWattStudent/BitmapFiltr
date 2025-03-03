@@ -1,7 +1,7 @@
 ﻿using BitmapFiltr.Commands;
 using BitmapFiltr.Models;
-using Filters;
-using Filters.Models;
+using Filters.Domain.Enums;
+using Filters.Domain.Interfaces;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -18,8 +18,8 @@ public class MainWindowViewModel : ViewModelBase
     private ICommand _applyFilterCommand;
     private ICommand _randomMatrixCommand;
 
-    private IFilter _laplacianFilter;
-    private string _uri = "pack://application:,,,/BitmapFiltr;component/Assets/DevToolsTodo.png";
+    private IFilterService _filterService;
+    private string _uri = "pack://application:,,,/Filters.UI;component/Assets/DevToolsTodo.png";
 
     public BitmapImage ImageBitmap
     {
@@ -54,7 +54,7 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand ApplyFilterCommand => _applyFilterCommand;
     public ICommand RandomMatrixCommand =>  _randomMatrixCommand;
 
-    public MainWindowViewModel(LaplacianFilter laplacianFilter)
+    public MainWindowViewModel(IFilterService laplacianFilter)
     {
         var uri = new Uri(_uri, UriKind.Absolute);
         var image = new BitmapImage(uri);
@@ -63,18 +63,18 @@ public class MainWindowViewModel : ViewModelBase
 
         _applyFilterCommand = new RelayCommand(ApplyFilter);
         _randomMatrixCommand = new RelayCommand(UpdateMatrix);
-        _laplacianFilter = laplacianFilter;
+        _filterService = laplacianFilter;
 
         UpdateMatrix();
     }
 
     private void UpdateMatrix()
     {
-        FilterMatrix.FromArray(_laplacianFilter.GenerateFilter(_filterSize));
+        FilterMatrix.FromArray(_filterService.GenerateFilter(_filterSize, FilterType.Laplacian));
     }
 
     private void ApplyFilter()
     {
-        NewImageBitmap = _laplacianFilter.ApplyFilter(_imageBitmap, _filterMatrix.ToArray());
+        NewImageBitmap = _filterService.ApplyFilter(_imageBitmap, _filterMatrix.ToArray(), FilterType.Laplacian);
     }
 }

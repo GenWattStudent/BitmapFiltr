@@ -19,7 +19,8 @@ jobs:
 
     env:
       Solution_Name: BitmapFiltr.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
-      #Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Unit_Test_Name: ./tests/Filters.Unit.Tests/Filters.Unit.Tests.csproj    # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Integration_Test_Name: ./tests/Filters.Integration.Tests/Filters.Integration.Tests.csproj
 
     steps:
     - name: Checkout
@@ -118,6 +119,18 @@ jobs:
       
     - name: Build WPF App
       run: dotnet build --configuration ${{ matrix.configuration }} 
+
+    - name: Run Unit Tests
+      run: dotnet test ${{ env.Unit_Test_Name }} --configuration ${{ matrix.configuration }} --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="TestResults\coverage-unit.xml"
+
+    - name: Run Integration Tests
+      run: dotnet test ${{ env.Integration_Test_Name }} --configuration ${{ matrix.configuration }} --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="TestResults\coverage-integration.xml"
+
+    - name: Generate Code Coverage Report
+      uses: danielpalme/ReportGenerator-GitHub-Action@v5
+      with:
+        reports: "TestResults/coverage-unit.xml;TestResults/coverage-integration.xml"
+        targetdir: coverage-report
       
     - name: Publish WPF App
       run: dotnet publish -c ${{ matrix.configuration }} -o publish-${{ matrix.configuration }}

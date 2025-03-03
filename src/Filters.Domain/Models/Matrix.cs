@@ -1,4 +1,4 @@
-﻿namespace Filters.Models;
+﻿namespace Filters.Domain.Models;
 
 public class Matrix
 {
