@@ -32,9 +32,12 @@ jobs:
     - name: Setup dotnet
       uses: actions/setup-dotnet@v4
       with:
+        global-json-file: csharp/global.json
         dotnet-version: 8.0.x
         cache: true
-        cache-dependency-path: subdir/packages.lock.json
+        cache-dependency-path: |
+          csharp/**/*.csproj
+          csharp/**/packages.lock.json
 
     - name: Restore nuget libs
       run: dotnet restore --locked-mode
