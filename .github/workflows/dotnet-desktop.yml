@@ -39,7 +39,7 @@ jobs:
           dotnet-sdk-${{ runner.os }}-
           
     - name: Install .NET Core (if not cached)
-      # if: steps.cache-dotnet-sdk.outputs.cache-hit != 'true'
+      if: steps.cache-dotnet-sdk.outputs.cache-hit != 'true'
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
