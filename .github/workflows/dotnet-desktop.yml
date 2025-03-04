@@ -29,27 +29,14 @@ jobs:
     - name: Checkout 
       uses: actions/checkout@v4
 
-    # - name: Setup dotnet
-    #   uses: actions/setup-dotnet@v4
-    #   with:
-    #     global-json-file: csharp/global.json
-    #     dotnet-version: 8.0.x
-    #     cache: true
-    #     cache-dependency-path: |
-    #       csharp/**/*.csproj
-    #       csharp/**/packages.lock.json
-
-    # - name: Restore nuget libs
-    #   run: dotnet restore --locked-mode
-
-    # - name: Cache .NET SDK
-    #   id: cache-dotnet-sdk
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: ~/.dotnet
-    #     key: dotnet-sdk-${{ runner.os }}-${{ hashFiles('global.json') }}
-    #     restore-keys: |
-    #       dotnet-sdk-${{ runner.os }}-
+    - name: Cache .NET SDK
+      id: cache-dotnet-sdk
+      uses: actions/cache@v4
+      with:
+        path: ~/.dotnet
+        key: dotnet-sdk-${{ runner.os }}-${{ hashFiles('global.json') }}
+        restore-keys: |
+          dotnet-sdk-${{ runner.os }}-
           
     - name: Install .NET Core (if not cached)
       # if: steps.cache-dotnet-sdk.outputs.cache-hit != 'true'
@@ -120,15 +107,6 @@ jobs:
         $certPath = "$env:RUNNER_TEMP\SigningCertificate.pfx"
         [IO.File]::WriteAllBytes($certPath, $pfx_cert_byte)
       shell: pwsh
-
-    # - name: Cache dependencies
-    #   id: nuget-cache
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: ~/.nuget/packages
-    #     key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
       run: dotnet restore --locked-mode
